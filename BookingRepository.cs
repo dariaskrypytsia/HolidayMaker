@@ -77,4 +77,20 @@ public class BookingRepository(MySqlConnection connection)
 
         return await command.ExecuteNonQueryAsync();
     }
+        public async Task<int> UpdateGuestsAsync(int bookingId, int customerId, int guests)
+    {
+        await using var command = new MySqlCommand(@"
+            UPDATE bokning bk
+            JOIN rum r ON r.id = bk.rum_id
+            SET bk.antal_personer = @guests
+            WHERE bk.id = @bookingId
+              AND bk.kund_id = @customerId
+              AND r.max_personer >= @guests;", connection);
+
+        command.Parameters.AddWithValue("@guests", guests);
+        command.Parameters.AddWithValue("@bookingId", bookingId);
+        command.Parameters.AddWithValue("@customerId", customerId);
+
+        return await command.ExecuteNonQueryAsync();
+    }
 }

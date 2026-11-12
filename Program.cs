@@ -50,7 +50,7 @@ while (running)
             break;
         case "5":
         case "6":
-            Console.WriteLine("Kommer snart.");
+            await bookingMenu.CancelAsync(selectedCustomer);
             break;
         case "0":
             running = false;

@@ -1,1 +1,1 @@
-public record AvailableRoom(int Id, string Accommodation, string City, string RoomNumber, int MaxGuests, decimal PricePerNight);
+public record AvailableRoom(int Id, string Accommodation, string City, string RoomNumber, int MaxGuests, decimal PricePerNight, int Rating);

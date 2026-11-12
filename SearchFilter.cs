@@ -1,0 +1,1 @@
+public record SearchFilter(bool NeedPool, bool NeedRestaurant, int? MaxBeach, int? MaxCenter, bool SortByRating);

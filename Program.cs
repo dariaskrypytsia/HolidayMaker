@@ -11,7 +11,8 @@ Console.WriteLine("Ansluten till databasen!");
 var kundRepo = new KundRepository(connection);
 var kundMeny = new KundMeny(kundRepo);
 var rumRepo = new RumRepository(connection);
-var rumMeny = new RumMeny(rumRepo);
+var bokningRepo = new BokningRepository(connection);
+var rumMeny = new RumMeny(rumRepo, bokningRepo);
 
 bool running = true;
 Kund? valdKund = null;
@@ -41,7 +42,7 @@ while (running)
         valdKund = await kundMeny.ValjAsync();
             break;
         case "3":
-        await rumMeny.SokAsync();
+        await rumMeny.SokOchBokaAsync(valdKund);
             break;
         case "4":
         case "5":

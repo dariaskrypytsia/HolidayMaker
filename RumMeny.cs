@@ -1,6 +1,6 @@
-public class RumMeny(RumRepository rumRepo)
+public class RumMeny(RumRepository rumRepo, BokningRepository bokningRepo)   // NYTT: bokningRepo
 {
-    public async Task SokAsync()
+    public async Task SokOchBokaAsync(Kund? kund)                            // NYTT: nytt namn + kund
     {
         Console.Write("Ort: ");
         string ort = Console.ReadLine()?.Trim() ?? "";
@@ -53,5 +53,41 @@ public class RumMeny(RumRepository rumRepo)
         {
             Console.WriteLine($"{r.Id}. {r.Boende}, {r.Ort} – rum {r.Rumsnummer}, max {r.MaxPersoner} pers, {r.PrisPerNatt} kr/natt");
         }
+
+        // NYTT: från här börjar bokningen
+
+        if (kund == null)
+        {
+            Console.WriteLine("Välj en kund först (meny 2) om du vill boka.");
+            return;
+        }
+
+        Console.Write("Skriv numret på rummet du vill boka (Enter = avbryt): ");
+        if (!int.TryParse(Console.ReadLine(), out int rumId))
+        {
+            Console.WriteLine("Ingen bokning gjordes.");
+            return;
+        }
+
+        var valtRum = rum.Find(r => r.Id == rumId);
+
+        if (valtRum == null)
+        {
+            Console.WriteLine("Det rummet finns inte i listan.");
+            return;
+        }
+
+        if (!await bokningRepo.ArLedigtAsync(valtRum.Id, incheckning, utcheckning))
+        {
+            Console.WriteLine("Tyvärr, rummet är inte längre ledigt.");
+            return;
+        }
+
+        long bokningsnummer = await bokningRepo.SkapaAsync(kund.Id, valtRum.Id, incheckning, utcheckning, antal);
+        decimal totalpris = natter * valtRum.PrisPerNatt;
+
+        Console.WriteLine($"Bokningen är klar! Bokningsnummer: {bokningsnummer}");
+        Console.WriteLine($"{kund.Namn}, {valtRum.Boende} rum {valtRum.Rumsnummer}, {incheckning:yyyy-MM-dd} – {utcheckning:yyyy-MM-dd}");
+        Console.WriteLine($"Totalpris: {natter} nätter × {valtRum.PrisPerNatt} kr = {totalpris} kr");
     }
 }

@@ -1,0 +1,1 @@
+public record LedigtRum(int Id, string Boende, string Ort, string Rumsnummer, int MaxPersoner, decimal PrisPerNatt);

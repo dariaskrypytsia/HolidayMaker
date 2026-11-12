@@ -49,6 +49,8 @@ while (running)
         await bookingMenu.ShowForCustomerAsync(selectedCustomer);
             break;
         case "5":
+        await bookingMenu.ChangeGuestsAsync(selectedCustomer);
+            break;
         case "6":
             await bookingMenu.CancelAsync(selectedCustomer);
             break;

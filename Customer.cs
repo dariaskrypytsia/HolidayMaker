@@ -1,1 +1,1 @@
-public record Kund(int Id, string Namn, string Telefon, string? Epost);
+public record Customer(int Id, string Name, string Phone, string? Email);

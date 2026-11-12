@@ -8,20 +8,20 @@ await connection.OpenAsync();
 
 Console.WriteLine("Ansluten till databasen!");
 
-var kundRepo = new KundRepository(connection);
-var kundMeny = new KundMeny(kundRepo);
-var rumRepo = new RumRepository(connection);
-var bokningRepo = new BokningRepository(connection);
-var rumMeny = new RumMeny(rumRepo, bokningRepo);
+var customerRepo = new CustomerRepository(connection);
+var customerMenu = new CustomerMenu(customerRepo);
+var roomRepo = new RoomRepository(connection);
+var bookingRepo = new BookingRepository(connection);
+var roomMenu = new RoomMenu(roomRepo, bookingRepo);
 
 bool running = true;
-Kund? valdKund = null;
+Customer? selectedCustomer = null;
 
 while (running)
 {
     Console.WriteLine();
     Console.WriteLine("=== Holiday Maker ===");
-    Console.WriteLine($"Vald kund: {valdKund?.Namn ?? "ingen"}");
+    Console.WriteLine($"Vald kund: {selectedCustomer?.Name ?? "ingen"}");
     Console.WriteLine("1. Registrera ny kund");
     Console.WriteLine("2. Välj kund");
     Console.WriteLine("3. Sök lediga rum och boka");
@@ -31,18 +31,18 @@ while (running)
     Console.WriteLine("0. Avsluta");
     Console.Write("Välj: ");
 
-    string? val = Console.ReadLine();
+    string? choice = Console.ReadLine();
 
-    switch (val)
+    switch (choice)
     {
         case "1":
-         await kundMeny.RegistreraAsync();
+            await customerMenu.RegisterAsync();
             break;
         case "2":
-        valdKund = await kundMeny.ValjAsync();
+            selectedCustomer = await customerMenu.SelectAsync();
             break;
         case "3":
-        await rumMeny.SokOchBokaAsync(valdKund);
+            await roomMenu.SearchAndBookAsync(selectedCustomer);
             break;
         case "4":
         case "5":

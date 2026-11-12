@@ -1,19 +1,19 @@
 using MySqlConnector;
 
-public class KundMeny(KundRepository kundRepo)
+public class CustomerMenu(CustomerRepository customerRepo)
 {
-    public async Task RegistreraAsync()
+    public async Task RegisterAsync()
     {
         Console.Write("Namn: ");
-        string namn = Console.ReadLine()?.Trim() ?? "";
+        string name = Console.ReadLine()?.Trim() ?? "";
 
         Console.Write("Telefon: ");
-        string telefon = Console.ReadLine()?.Trim() ?? "";
+        string phone = Console.ReadLine()?.Trim() ?? "";
 
         Console.Write("E-post (tryck Enter för att hoppa över): ");
-        string epost = Console.ReadLine()?.Trim() ?? "";
+        string email = Console.ReadLine()?.Trim() ?? "";
 
-        if (namn == "" || telefon == "")
+        if (name == "" || phone == "")
         {
             Console.WriteLine("Namn och telefon måste fyllas i.");
             return;
@@ -21,7 +21,7 @@ public class KundMeny(KundRepository kundRepo)
 
         try
         {
-            long id = await kundRepo.RegistreraAsync(namn, telefon, epost == "" ? null : epost);
+            long id = await customerRepo.RegisterAsync(name, phone, email == "" ? null : email);
             Console.WriteLine($"Kunden är registrerad med kundnummer {id}.");
         }
         catch (MySqlException)
@@ -30,13 +30,13 @@ public class KundMeny(KundRepository kundRepo)
         }
     }
 
-    public async Task<Kund?> ValjAsync()
+    public async Task<Customer?> SelectAsync()
     {
-        var kunder = await kundRepo.HamtaAllaAsync();
+        var customers = await customerRepo.GetAllAsync();
 
-        foreach (var kund in kunder)
+        foreach (var customer in customers)
         {
-            Console.WriteLine($"{kund.Id}. {kund.Namn} ({kund.Telefon})");
+            Console.WriteLine($"{customer.Id}. {customer.Name} ({customer.Phone})");
         }
 
         Console.Write("Skriv kundnummer: ");
@@ -47,13 +47,13 @@ public class KundMeny(KundRepository kundRepo)
             return null;
         }
 
-        var vald = kunder.Find(k => k.Id == id);
+        var selected = customers.Find(c => c.Id == id);
 
-        if (vald == null)
+        if (selected == null)
         {
             Console.WriteLine("Det finns ingen kund med det numret.");
         }
 
-        return vald;
+        return selected;
     }
 }

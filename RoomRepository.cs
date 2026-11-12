@@ -1,36 +1,36 @@
 using MySqlConnector;
 
-public class RumRepository(MySqlConnection connection)
+public class RoomRepository(MySqlConnection connection)
 {
-    public async Task<List<LedigtRum>> SokLedigaAsync(string ort, DateTime incheckning, DateTime utcheckning, int antalPersoner)
+    public async Task<List<AvailableRoom>> SearchAvailableAsync(string city, DateTime checkIn, DateTime checkOut, int guests)
     {
-        var rum = new List<LedigtRum>();
+        var rooms = new List<AvailableRoom>();
 
         await using var command = new MySqlCommand(@"
             SELECT r.id, bo.namn AS boende, bo.ort, r.rumsnummer, r.max_personer, r.pris_per_natt
             FROM rum r
             JOIN boende bo ON bo.id = r.boende_id
-            WHERE bo.ort = @ort
-              AND r.max_personer >= @antal
+            WHERE bo.ort = @city
+              AND r.max_personer >= @guests
               AND NOT EXISTS (
                   SELECT 1
                   FROM bokning bk
                   WHERE bk.rum_id = r.id
-                    AND bk.incheckning < @utcheckning
-                    AND bk.utcheckning > @incheckning
+                    AND bk.incheckning < @checkOut
+                    AND bk.utcheckning > @checkIn
               )
             ORDER BY r.pris_per_natt;", connection);
 
-        command.Parameters.AddWithValue("@ort", ort);
-        command.Parameters.AddWithValue("@antal", antalPersoner);
-        command.Parameters.AddWithValue("@incheckning", incheckning);
-        command.Parameters.AddWithValue("@utcheckning", utcheckning);
+        command.Parameters.AddWithValue("@city", city);
+        command.Parameters.AddWithValue("@guests", guests);
+        command.Parameters.AddWithValue("@checkIn", checkIn);
+        command.Parameters.AddWithValue("@checkOut", checkOut);
 
         await using var reader = await command.ExecuteReaderAsync();
 
         while (await reader.ReadAsync())
         {
-            rum.Add(new LedigtRum(
+            rooms.Add(new AvailableRoom(
                 reader.GetInt32("id"),
                 reader.GetString("boende"),
                 reader.GetString("ort"),
@@ -39,6 +39,6 @@ public class RumRepository(MySqlConnection connection)
                 reader.GetDecimal("pris_per_natt")));
         }
 
-        return rum;
+        return rooms;
     }
 }

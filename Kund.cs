@@ -1,0 +1,1 @@
+public record Kund(int Id, string Namn, string Telefon, string? Epost);

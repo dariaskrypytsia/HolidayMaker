@@ -1,0 +1,1 @@
+public record BookingInfo(int Id, string Accommodation, string RoomNumber, DateTime CheckIn, DateTime CheckOut, int Guests, decimal TotalPrice);

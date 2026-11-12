@@ -72,4 +72,46 @@ public class BookingMenu(BookingRepository bookingRepo)
             Console.WriteLine("Bokningen kunde inte hittas.");
         }
     }
+        public async Task ChangeGuestsAsync(Customer? customer)
+    {
+        var bookings = await ShowForCustomerAsync(customer);
+
+        if (customer == null || bookings.Count == 0)
+        {
+            return;
+        }
+
+        Console.Write("Skriv bokningsnummer som ska ändras (Enter = avbryt): ");
+        if (!int.TryParse(Console.ReadLine(), out int bookingId))
+        {
+            Console.WriteLine("Ingen ändring gjordes.");
+            return;
+        }
+
+        var selectedBooking = bookings.Find(b => b.Id == bookingId);
+
+        if (selectedBooking == null)
+        {
+            Console.WriteLine("Det bokningsnumret finns inte i listan.");
+            return;
+        }
+
+        Console.Write($"Nytt antal personer (nu {selectedBooking.Guests}): ");
+        if (!int.TryParse(Console.ReadLine(), out int guests) || guests < 1)
+        {
+            Console.WriteLine("Antal personer måste vara ett heltal, minst 1.");
+            return;
+        }
+
+        int updated = await bookingRepo.UpdateGuestsAsync(selectedBooking.Id, customer.Id, guests);
+
+        if (updated == 1)
+        {
+            Console.WriteLine($"Bokning nr {selectedBooking.Id} gäller nu {guests} personer.");
+        }
+        else
+        {
+            Console.WriteLine("Det får inte plats så många personer i rummet.");
+        }
+    }
 }

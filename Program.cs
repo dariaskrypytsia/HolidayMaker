@@ -12,11 +12,13 @@ var kundRepo = new KundRepository(connection);
 var kundMeny = new KundMeny(kundRepo);
 
 bool running = true;
+Kund? valdKund = null;
 
 while (running)
 {
     Console.WriteLine();
     Console.WriteLine("=== Holiday Maker ===");
+    Console.WriteLine($"Vald kund: {valdKund?.Namn ?? "ingen"}");
     Console.WriteLine("1. Registrera ny kund");
     Console.WriteLine("2. Välj kund");
     Console.WriteLine("3. Sök lediga rum och boka");
@@ -34,6 +36,8 @@ while (running)
          await kundMeny.RegistreraAsync();
             break;
         case "2":
+        valdKund = await kundMeny.ValjAsync();
+            break;
         case "3":
         case "4":
         case "5":

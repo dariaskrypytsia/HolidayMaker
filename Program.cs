@@ -13,6 +13,7 @@ var customerMenu = new CustomerMenu(customerRepo);
 var roomRepo = new RoomRepository(connection);
 var bookingRepo = new BookingRepository(connection);
 var roomMenu = new RoomMenu(roomRepo, bookingRepo);
+var bookingMenu = new BookingMenu(bookingRepo);
 
 bool running = true;
 Customer? selectedCustomer = null;
@@ -45,6 +46,8 @@ while (running)
             await roomMenu.SearchAndBookAsync(selectedCustomer);
             break;
         case "4":
+        await bookingMenu.ShowForCustomerAsync(selectedCustomer);
+            break;
         case "5":
         case "6":
             Console.WriteLine("Kommer snart.");

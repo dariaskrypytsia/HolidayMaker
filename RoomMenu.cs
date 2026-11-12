@@ -1,5 +1,33 @@
 public class RoomMenu(RoomRepository roomRepo, BookingRepository bookingRepo)
 {
+    private static bool AskYesNo(string question)
+    {
+        Console.Write($"{question} (j/n): ");
+        string answer = Console.ReadLine()?.Trim().ToLower() ?? "";
+        return answer == "j";
+    }
+
+    private static int? AskMaxDistance(string question)
+    {
+        while (true)
+        {
+            Console.Write($"{question} (meter, Enter = spelar ingen roll): ");
+            string input = Console.ReadLine()?.Trim() ?? "";
+
+            if (input == "")
+            {
+                return null;
+            }
+
+            if (int.TryParse(input, out int meters) && meters >= 0)
+            {
+                return meters;
+            }
+
+            Console.WriteLine("Skriv ett heltal, eller tryck Enter.");
+        }
+    }
+
     public async Task SearchAndBookAsync(Customer? customer)
     {
         Console.Write("Ort: ");
@@ -38,7 +66,16 @@ public class RoomMenu(RoomRepository roomRepo, BookingRepository bookingRepo)
             return;
         }
 
-        var rooms = await roomRepo.SearchAvailableAsync(city, checkIn, checkOut, guests);
+        bool needPool = AskYesNo("Måste det finnas pool?");
+        bool needRestaurant = AskYesNo("Måste det finnas restaurang?");
+        int? maxBeach = AskMaxDistance("Max avstånd till strand");
+        int? maxCenter = AskMaxDistance("Max avstånd till centrum");
+
+        Console.Write("Sortera efter: 1 = pris (lägst först), 2 = omdöme (högst först): ");
+        bool sortByRating = Console.ReadLine()?.Trim() == "2";
+
+        var filter = new SearchFilter(needPool, needRestaurant, maxBeach, maxCenter, sortByRating);
+        var rooms = await roomRepo.SearchAvailableAsync(city, checkIn, checkOut, guests, filter);
 
         if (rooms.Count == 0)
         {
@@ -51,7 +88,8 @@ public class RoomMenu(RoomRepository roomRepo, BookingRepository bookingRepo)
 
         foreach (var room in rooms)
         {
-            Console.WriteLine($"{room.Id}. {room.Accommodation}, {room.City} – rum {room.RoomNumber}, max {room.MaxGuests} pers, {room.PricePerNight} kr/natt");
+            Console.WriteLine($"{room.Id}. {room.Accommodation}, {room.City} – rum {room.RoomNumber}, " +
+                $"max {room.MaxGuests} pers, {room.PricePerNight} kr/natt, omdöme {room.Rating}/5");
         }
 
         if (customer == null)

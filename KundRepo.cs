@@ -15,4 +15,26 @@ public class KundRepository(MySqlConnection connection)
         await command.ExecuteNonQueryAsync();
         return command.LastInsertedId;
     }
+
+    public async Task<List<Kund>> HamtaAllaAsync()
+    {
+        var kunder = new List<Kund>();
+
+        await using var command = new MySqlCommand(
+            "SELECT id, namn, telefon, epost FROM kund ORDER BY namn;",
+            connection);
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            kunder.Add(new Kund(
+                reader.GetInt32("id"),
+                reader.GetString("namn"),
+                reader.GetString("telefon"),
+                reader.IsDBNull(reader.GetOrdinal("epost")) ? null : reader.GetString("epost")));
+        }
+
+        return kunder;
+    }
 }

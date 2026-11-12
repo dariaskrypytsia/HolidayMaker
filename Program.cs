@@ -8,6 +8,9 @@ await connection.OpenAsync();
 
 Console.WriteLine("Ansluten till databasen!");
 
+var kundRepo = new KundRepository(connection);
+var kundMeny = new KundMeny(kundRepo);
+
 bool running = true;
 
 while (running)
@@ -28,6 +31,8 @@ while (running)
     switch (val)
     {
         case "1":
+         await kundMeny.RegistreraAsync();
+            break;
         case "2":
         case "3":
         case "4":

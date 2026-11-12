@@ -27,4 +27,49 @@ public class BookingMenu(BookingRepository bookingRepo)
 
         return bookings;
     }
+
+    public async Task CancelAsync(Customer? customer)
+    {
+        var bookings = await ShowForCustomerAsync(customer);
+
+        if (customer == null || bookings.Count == 0)
+        {
+            return;
+        }
+
+        Console.Write("Skriv bokningsnummer som ska avbokas (Enter = avbryt): ");
+        if (!int.TryParse(Console.ReadLine(), out int bookingId))
+        {
+            Console.WriteLine("Ingen bokning avbokades.");
+            return;
+        }
+
+        var selectedBooking = bookings.Find(b => b.Id == bookingId);
+
+        if (selectedBooking == null)
+        {
+            Console.WriteLine("Det bokningsnumret finns inte i listan.");
+            return;
+        }
+
+        Console.Write($"Vill du verkligen avboka nr {selectedBooking.Id}? (j/n): ");
+        string answer = Console.ReadLine()?.Trim().ToLower() ?? "";
+
+        if (answer != "j")
+        {
+            Console.WriteLine("Ingen bokning avbokades.");
+            return;
+        }
+
+        int deleted = await bookingRepo.DeleteAsync(selectedBooking.Id, customer.Id);
+
+        if (deleted == 1)
+        {
+            Console.WriteLine($"Bokning nr {selectedBooking.Id} är avbokad. Rummet är ledigt igen.");
+        }
+        else
+        {
+            Console.WriteLine("Bokningen kunde inte hittas.");
+        }
+    }
 }

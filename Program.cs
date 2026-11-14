@@ -6,7 +6,6 @@ string connectionString =
 await using var connection = new MySqlConnection(connectionString);
 await connection.OpenAsync();
 
-Console.WriteLine("Ansluten till databasen!");
 
 var customerRepo = new CustomerRepository(connection);
 var customerMenu = new CustomerMenu(customerRepo);

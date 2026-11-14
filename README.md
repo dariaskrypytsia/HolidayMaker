@@ -37,7 +37,7 @@ Kör skripten bara en gång.
 
 - `database/holidaymaker_schema.sql` – skapar databasen och tabellerna
 - `database/holidaymaker_testdata.sql` – testdata
-- `database/fragor.sql` – SQL-frågor som jag testade i DBeaver
+- `database/queries.sql` – SQL-frågor som jag testade i DBeaver
 - `database/er-diagram.png` – E/R-diagram
 - `Program.cs` – anslutning och huvudmeny
 - `*Repository.cs` – all SQL, pratar med databasen
